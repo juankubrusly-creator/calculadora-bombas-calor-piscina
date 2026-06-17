@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cálculo Bomba de Calor - MundoClima</title>
-    <!-- Librería para PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Fuente para la firma -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -332,21 +330,18 @@
 </head>
 <body>
 
-    <!-- CONTROLES DE ENTRADA -->
     <div class="input-section" data-html2canvas-ignore>
         <h1 class="main-title">PROGRAMA DE CÁLCULO DE BOMBAS DE CALOR PARA PISCINAS</h1>
         <p class="subtitle">Dimensionamiento Térmico &copy; Juan Cabanelas</p>
         
         <form id="calc-form" onsubmit="event.preventDefault(); descargarPDF();">
             <div class="form-grid">
-                <!-- Fila 1 -->
                 <div class="form-group"><label>Nombre Cliente:</label><input type="text" id="in-nombre" required oninput="calcular()"></div>
                 <div class="form-group"><label>Dirección:</label><input type="text" id="in-dir" required oninput="calcular()"></div>
                 <div class="form-group"><label>Población:</label><input type="text" id="in-pob" required oninput="calcular()"></div>
                 <div class="form-group"><label>Teléfono:</label><input type="text" id="in-tel" required oninput="calcular()"></div>
                 <div class="form-group"><label>Email:</label><input type="email" id="in-email" required oninput="calcular()"></div>
                 
-                <!-- Fila 2 -->
                 <div class="form-group"><label>Ancho (m):</label><input type="number" id="in-ancho" step="0.1" required oninput="calcular()"></div>
                 <div class="form-group"><label>Largo (m):</label><input type="number" id="in-largo" step="0.1" required oninput="calcular()"></div>
                 <div class="form-group"><label>Profundidad (m):</label><input type="number" id="in-prof" step="0.1" required oninput="calcular()"></div>
@@ -360,7 +355,6 @@
                 </div>
                 <div class="form-group"><label>Temp. Objetivo (°C):</label><input type="number" id="in-tobj" required oninput="calcular()"></div>
 
-                <!-- Fila 3 -->
                 <div class="form-group"><label>Temp. Mínima Ext (°C):</label><input type="number" id="in-tminext" required oninput="calcular()"></div>
                 <div class="form-group"><label>Temp. Inicial Agua (°C):</label><input type="number" id="in-tinicial" required oninput="calcular()"></div>
                 <div class="form-group">
@@ -380,7 +374,6 @@
                 </div>
                 <div class="form-group"><label>Horas calentamiento:</label><input type="number" id="in-horas" required oninput="calcular()"></div>
 
-                <!-- Fila 4 (Variables de Piscina Interior) -->
                 <div class="form-group" id="grp-tlocal" style="display: none;">
                     <label>Temp. Local Interior (°C):</label>
                     <input type="number" id="in-tlocal" oninput="calcular()">
@@ -395,13 +388,11 @@
         </form>
     </div>
 
-    <!-- REPORTE VISUAL (TAMAÑO A4) -->
     <div class="report-wrapper">
         <div id="informe-print">
             
-            <!-- CABECERA CORPORATIVA CON LOGO SALVADOR ESCODA -->
             <div class="header-container">
-                <img src="https://www.salvadorescoda.com/wp-content/uploads/2025/12/logo_salvador.png" id="img-cabecera" class="header-logo" alt="Salvador Escoda S.A." onerror="this.src='https://via.placeholder.com/250x60/FFFFFF/0033a0?text=SALVADOR+ESCODA'">
+                <img src="logo_salvador.png" id="img-cabecera" class="header-logo" alt="Salvador Escoda S.A.">
                 
                 <div class="header-text">
                     <h2>Estudio Térmico</h2>
@@ -491,7 +482,6 @@
 
             <div class="footer-stamps">
                 <div class="signature">
-                    <!-- Firma con fuente tipográfica imitando bolígrafo -->
                     <div class="signature-img">Juan Cabanelas</div>
                     <div style="border-top: 1px solid #000; padding-top: 4px;">
                         <strong>Juan Cabanelas Kubrusly</strong><br>
@@ -502,7 +492,6 @@
                 
                 <div class="stamp-container">
                     <div class="stamp">
-                        <!-- Sello S.A.U. -->
                         <div class="stamp-title">SALVADOR ESCODA S.A.U.</div>
                         <div class="stamp-sub">Nàpols, 249 pl.1 - 08013 Barcelona<br>Tel. 93 446 27 80</div>
                     </div>
@@ -651,17 +640,33 @@
         }
 
         function descargarPDF() {
+            // 1. Forzar a la pantalla a ir arriba del todo (soluciona la hoja en blanco)
+            window.scrollTo(0, 0);
+
             const element = document.getElementById('informe-print');
+            const wrapper = document.querySelector('.report-wrapper');
             const nombreCliente = document.getElementById('in-nombre').value.replace(/\s+/g, '_') || 'Cliente';
             
+            // 2. Quitar el scroll temporalmente para que no se corte en móviles
+            wrapper.style.overflowX = 'visible';
+
             const opt = {
-                margin:       [0, 0, 0, 0], 
+                margin:       0, 
                 filename:     `Calculo_Piscina_${nombreCliente}.pdf`,
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true }, 
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    scrollY: 0,
+                    scrollX: 0
+                }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().from(element).set(opt).save();
+
+            // 3. Generar el PDF y luego devolver el diseño a la normalidad
+            html2pdf().from(element).set(opt).save().then(() => {
+                wrapper.style.overflowX = 'auto';
+            });
         }
 
         window.onload = function() {
