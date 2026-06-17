@@ -69,6 +69,7 @@
             font-size: 13px;
             font-family: Arial, sans-serif;
             border-radius: 3px;
+            box-sizing: border-box;
         }
 
         .form-group input:focus, .form-group select:focus {
@@ -237,7 +238,7 @@
             grid-template-columns: 1fr 1fr 1fr;
             align-items: end;
             margin-top: 40px;
-            padding-bottom: 50px; /* Margen extra inferior para que quepa el bloque bajado */
+            padding-bottom: 50px; 
             font-size: 11px;
             color: #000;
         }
@@ -246,7 +247,7 @@
         .signature-img { 
             font-family: 'Caveat', cursive; 
             font-size: 42px; 
-            color: #1e3a8a; /* Azul tinta de bolígrafo */
+            color: #1e3a8a; 
             border-bottom: none; 
             padding-bottom: 0px;
             margin-bottom: 5px;
@@ -285,7 +286,7 @@
             position: relative;
             justify-self: end;
             width: 170px;
-            transform: translateY(50px); /* Ajuste para bajar el bloque tal como solicitaste */
+            transform: translateY(50px);
         }
         .address-block::before {
             content: "";
@@ -296,6 +297,31 @@
             height: 0;
             border-top: 60px solid white;
             border-right: 15px solid #0070c0;
+        }
+
+        /* ----- ADAPTACIÓN PARA MÓVILES Y TABLETS ----- */
+        @media (max-width: 950px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .input-section {
+                padding: 15px 20px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr; /* Todo a una sola columna en teléfonos */
+            }
+            .report-wrapper {
+                justify-content: flex-start;
+                overflow-x: auto; /* Permite deslizar horizontalmente la hoja A4 */
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 20px;
+            }
+            #informe-print {
+                margin: 0 10px; /* Margen para que no toque el borde del móvil */
+            }
         }
     </style>
 </head>
@@ -367,7 +393,7 @@
                 
                 <div class="header-text">
                     <h2>Estudio Térmico</h2>
-                    <p>Dimensionamiento Bomba de Calor de Piscina</p>
+                    <p>Dimensionamiento Bomba de Calor</p>
                 </div>
             </div>
             
