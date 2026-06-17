@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cálculo Bomba de Calor - MundoClima</title>
+    <!-- Librería para PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Fuente para la firma -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -12,6 +14,7 @@
             margin: 0;
             background-color: #f8f9fa;
             color: #333;
+            overflow-x: hidden; /* Evita que la web baile hacia los lados en móvil */
         }
 
         /* ----- ZONA DE ENTRADA (NO SE IMPRIME) ----- */
@@ -21,6 +24,8 @@
             border-bottom: 4px solid #0033a0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
             margin-bottom: 30px;
+            width: 100%;
+            box-sizing: border-box; /* Mantiene el ancho controlado */
         }
         
         .main-title {
@@ -70,6 +75,7 @@
             font-family: Arial, sans-serif;
             border-radius: 3px;
             box-sizing: border-box;
+            width: 100%;
         }
 
         .form-group input:focus, .form-group select:focus {
@@ -98,12 +104,15 @@
             display: flex;
             justify-content: center;
             margin-bottom: 40px;
+            width: 100%;
+            overflow-x: auto; /* Permite scroll horizontal fluido */
+            -webkit-overflow-scrolling: touch;
         }
 
         #informe-print {
             background: white;
-            /* Ancho fijo para A4 perfecto */
             width: 190mm; 
+            min-width: 190mm; /* Evita que el móvil aplaste el A4 */
             min-height: 277mm; 
             padding: 10mm 15mm;
             box-sizing: border-box;
@@ -111,6 +120,7 @@
             color: #000;
             font-size: 12px;
             position: relative;
+            flex-shrink: 0; /* Clave para mantener proporciones en móvil */
         }
 
         /* ----- CABECERA DEL REPORTE ----- */
@@ -124,7 +134,7 @@
         }
 
         .header-logo {
-            max-height: 55px; /* Altura ideal para el logo */
+            max-height: 55px;
             width: auto;
             object-fit: contain;
         }
@@ -315,30 +325,28 @@
             }
             .report-wrapper {
                 justify-content: flex-start;
-                overflow-x: auto; /* Permite deslizar horizontalmente la hoja A4 */
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 20px;
-            }
-            #informe-print {
-                margin: 0 10px; /* Margen para que no toque el borde del móvil */
+                padding: 0 10px 20px 10px;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- CONTROLES DE ENTRADA -->
     <div class="input-section" data-html2canvas-ignore>
         <h1 class="main-title">PROGRAMA DE CÁLCULO DE BOMBAS DE CALOR PARA PISCINAS</h1>
         <p class="subtitle">Dimensionamiento Térmico &copy; Juan Cabanelas</p>
         
         <form id="calc-form" onsubmit="event.preventDefault(); descargarPDF();">
             <div class="form-grid">
+                <!-- Fila 1 -->
                 <div class="form-group"><label>Nombre Cliente:</label><input type="text" id="in-nombre" required oninput="calcular()"></div>
                 <div class="form-group"><label>Dirección:</label><input type="text" id="in-dir" required oninput="calcular()"></div>
                 <div class="form-group"><label>Población:</label><input type="text" id="in-pob" required oninput="calcular()"></div>
                 <div class="form-group"><label>Teléfono:</label><input type="text" id="in-tel" required oninput="calcular()"></div>
                 <div class="form-group"><label>Email:</label><input type="email" id="in-email" required oninput="calcular()"></div>
                 
+                <!-- Fila 2 -->
                 <div class="form-group"><label>Ancho (m):</label><input type="number" id="in-ancho" step="0.1" required oninput="calcular()"></div>
                 <div class="form-group"><label>Largo (m):</label><input type="number" id="in-largo" step="0.1" required oninput="calcular()"></div>
                 <div class="form-group"><label>Profundidad (m):</label><input type="number" id="in-prof" step="0.1" required oninput="calcular()"></div>
@@ -352,6 +360,7 @@
                 </div>
                 <div class="form-group"><label>Temp. Objetivo (°C):</label><input type="number" id="in-tobj" required oninput="calcular()"></div>
 
+                <!-- Fila 3 -->
                 <div class="form-group"><label>Temp. Mínima Ext (°C):</label><input type="number" id="in-tminext" required oninput="calcular()"></div>
                 <div class="form-group"><label>Temp. Inicial Agua (°C):</label><input type="number" id="in-tinicial" required oninput="calcular()"></div>
                 <div class="form-group">
@@ -371,6 +380,7 @@
                 </div>
                 <div class="form-group"><label>Horas calentamiento:</label><input type="number" id="in-horas" required oninput="calcular()"></div>
 
+                <!-- Fila 4 (Variables de Piscina Interior) -->
                 <div class="form-group" id="grp-tlocal" style="display: none;">
                     <label>Temp. Local Interior (°C):</label>
                     <input type="number" id="in-tlocal" oninput="calcular()">
@@ -385,9 +395,11 @@
         </form>
     </div>
 
+    <!-- REPORTE VISUAL (TAMAÑO A4) -->
     <div class="report-wrapper">
         <div id="informe-print">
             
+            <!-- CABECERA CORPORATIVA CON LOGO SALVADOR ESCODA -->
             <div class="header-container">
                 <img src="https://www.salvadorescoda.com/wp-content/uploads/2025/12/logo_salvador.png" id="img-cabecera" class="header-logo" alt="Salvador Escoda S.A." onerror="this.src='https://via.placeholder.com/250x60/FFFFFF/0033a0?text=SALVADOR+ESCODA'">
                 
@@ -479,6 +491,7 @@
 
             <div class="footer-stamps">
                 <div class="signature">
+                    <!-- Firma con fuente tipográfica imitando bolígrafo -->
                     <div class="signature-img">Juan Cabanelas</div>
                     <div style="border-top: 1px solid #000; padding-top: 4px;">
                         <strong>Juan Cabanelas Kubrusly</strong><br>
@@ -489,6 +502,7 @@
                 
                 <div class="stamp-container">
                     <div class="stamp">
+                        <!-- Sello S.A.U. -->
                         <div class="stamp-title">SALVADOR ESCODA S.A.U.</div>
                         <div class="stamp-sub">Nàpols, 249 pl.1 - 08013 Barcelona<br>Tel. 93 446 27 80</div>
                     </div>
